@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "sqlamoz2",
+        "title": "SqlAmoz2",
         "width": 800,
         "height": 600
       }

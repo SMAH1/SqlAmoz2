@@ -1,0 +1,211 @@
+<div class="db-query-container" [class.dark-theme]="isDarkMode">
+  
+  <div class="maximize-overlay" *ngIf="isAnyTableMaximized && !isQueryResultMaximized"></div>
+
+  <!-- Header with Theme Toggle -->
+  <div class="level mb-5" *ngIf="!isAnyTableMaximized || isQueryResultMaximized">
+    <div class="level-left">
+      <div class="level-item">
+        <h1 class="title is-3">SQL Amoz 2</h1>
+      </div>
+    </div>
+    <div class="level-right">
+      <div class="level-item">
+        <button class="button" (click)="toggleTheme()">
+          <span class="icon">
+            <i class="fas" [class.fa-moon]="!isDarkMode" [class.fa-sun]="isDarkMode"></i>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- Row 1: Three Tables -->
+  <div class="section" 
+       [class.maximized-tables-view]="isAnyTableMaximized"
+       *ngIf="!isQueryResultMaximized">
+    
+    <div class="table-selector-buttons mb-4" *ngIf="isAnyTableMaximized">
+      <div class="buttons has-addons is-centered">
+        <button *ngFor="let table of tables; let i = index"
+                class="button"
+                [class.is-primary]="isTableSelected(i)"
+                [class.is-outlined]="!isTableSelected(i)"
+                (click)="toggleTableSelection(i)">
+          <span class="icon">
+            <i class="fas fa-table"></i>
+          </span>
+          <span>{{ table.name }}</span>
+        </button>
+      </div>
+    </div>
+
+    <h2 class="title is-4 mb-4" *ngIf="!isAnyTableMaximized">Data Tables</h2>
+    
+    <!-- Loading State -->
+    <div *ngIf="isLoadingTables" class="has-text-centered py-6">
+      <button class="button is-loading is-large is-ghost"></button>
+      <p class="mt-3">Loading tables data...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="tablesError && !isLoadingTables" class="notification is-danger">
+      <button class="delete" (click)="tablesError = null"></button>
+      {{ tablesError }}
+    </div>
+
+    <!-- Tables Grid -->
+    <div *ngIf="!isLoadingTables && !tablesError" class="columns is-multiline">
+      <div *ngFor="let table of tables; let i = index" 
+           [class.is-hidden]="isAnyTableMaximized && !isTableSelected(i)"
+           [class]="isAnyTableMaximized ? 'column is-' + (12 / selectedTableIndices.size) : 'column is-4'"
+           class="column">
+        <div class="box table-container" [class.maximized-table-box]="isAnyTableMaximized">
+          <div class="level mb-3">
+            <div class="level-left">
+              <div class="level-item">
+                <h3 class="title is-5">{{ table.name }}</h3>
+              </div>
+            </div>
+            <div class="level-right">
+              <div class="level-item">
+                <button class="button is-small" (click)="toggleTableMaximize(i)">
+                  <span class="icon">
+                    <i class="fas" [class.fa-expand]="maximizedTableIndex !== i" 
+                       [class.fa-compress]="maximizedTableIndex === i"></i>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="table-wrapper" [class.maximized-table-wrapper]="isAnyTableMaximized">
+            <table class="table is-fullwidth is-striped is-hoverable">
+              <thead>
+                <tr>
+                  <th *ngFor="let col of table.columns">{{ col }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of table.data">
+                  <td *ngFor="let col of table.columns">{{ row[col] }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Row 2: Query Builder -->
+  <div class="section" *ngIf="!isAnyTableMaximized && !isQueryResultMaximized">
+    <h2 class="title is-4 mb-4">Query Builder</h2>
+    
+    <div class="columns">
+      <!-- Left Column: Query Parameters -->
+      <div class="column is-6">
+        <div class="box">
+          <div class="field" *ngFor="let param of queryParams">
+            <label class="label">{{ param.label }}</label>
+            <div class="control">
+              <input class="input" type="text" 
+                     [(ngModel)]="param.value" 
+                     [placeholder]="param.placeholder">
+            </div>
+          </div>
+          
+          <div class="field mt-5">
+            <div class="control">
+              <button class="button is-primary is-fullwidth" 
+                      (click)="executeQuery()"
+                      [class.is-loading]="isLoadingQuery">
+                <span class="icon">
+                  <i class="fas fa-play"></i>
+                </span>
+                <span>Execute Query</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Generated SQL -->
+      <div class="column is-6">
+        <div class="box query">
+          <label class="label">Generated SQL Query</label>
+          <div class="control">
+            <textarea class="textarea is-family-monospace" 
+                      rows="10" 
+                      readonly
+                      [value]="generatedSQL"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Row 3: Query Results -->
+  <div class="section" 
+       [class.is-fullheight]="isQueryResultMaximized"
+       *ngIf="!isAnyTableMaximized">
+    <div class="level mb-4">
+      <div class="level-left">
+        <div class="level-item">
+          <h2 class="title is-4">Query Results</h2>
+        </div>
+      </div>
+      <div class="level-right" *ngIf="queryResult.data.length > 0">
+        <div class="level-item">
+          <button class="button is-small" (click)="toggleQueryResultMaximize()">
+            <span class="icon">
+              <i class="fas" [class.fa-expand]="!isQueryResultMaximized" 
+                 [class.fa-compress]="isQueryResultMaximized"></i>
+            </span>
+            <span>{{ isQueryResultMaximized ? 'Minimize' : 'Maximize' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoadingQuery" class="has-text-centered py-6">
+      <button class="button is-loading is-large is-ghost"></button>
+      <p class="mt-3">Executing query...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="queryError && !isLoadingQuery" class="notification is-danger">
+      <button class="delete" (click)="queryError = null"></button>
+      {{ queryError }}
+    </div>
+
+    <!-- No Results -->
+    <div *ngIf="!isLoadingQuery && !queryError && queryResult.data.length === 0" 
+         class="notification is-info is-light">
+      No query executed yet. Use the query builder above to execute a query.
+    </div>
+
+    <!-- Results Table -->
+    <div *ngIf="!isLoadingQuery && !queryError && queryResult.data.length > 0" 
+         class="box">
+      <div class="table-wrapper" [class.maximized-table]="isQueryResultMaximized">
+        <table class="table is-fullwidth is-striped is-hoverable">
+          <thead>
+            <tr>
+              <th *ngFor="let col of queryResult.columns">{{ col }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of queryResult.data">
+              <td *ngFor="let col of queryResult.columns">{{ row[col] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="has-text-centered mt-3">
+        <p class="has-text-grey">
+          Total Results: <strong>{{ queryResult.data.length }}</strong>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

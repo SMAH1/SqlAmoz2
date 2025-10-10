@@ -1,0 +1,493 @@
+/* Container */
+.db-query-container {
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: #f5f5f5;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Dark Theme */
+.dark-theme {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+}
+
+.dark-theme .title,
+.dark-theme .label {
+  color: #e0e0e0;
+}
+
+.dark-theme .box {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+  border: 1px solid #3a3a3a;
+}
+
+.dark-theme .input,
+.dark-theme .textarea {
+  background-color: #363636;
+  color: #e0e0e0;
+  border-color: #4a4a4a;
+}
+
+.dark-theme .input:focus,
+.dark-theme .textarea:focus {
+  border-color: #3273dc;
+}
+
+.dark-theme .table {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+}
+
+.dark-theme .table thead th {
+  background-color: #363636;
+  color: #e0e0e0;
+  border-color: #4a4a4a;
+}
+
+.dark-theme .table tbody tr {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+.dark-theme .table tbody tr:hover {
+  background-color: #363636;
+}
+
+.dark-theme .table tbody td {
+  color: #e0e0e0;
+  border-color: #3a3a3a;
+}
+
+.dark-theme .table.is-striped tbody tr:nth-child(even) {
+  background-color: #2e2e2e;
+}
+
+.dark-theme .notification.is-info.is-light {
+  background-color: #363636;
+  color: #9dd5ff;
+}
+
+.dark-theme .button {
+  background-color: #363636;
+  color: #e0e0e0;
+  border-color: #4a4a4a;
+}
+
+.dark-theme .button:hover {
+  background-color: #4a4a4a;
+  border-color: #5a5a5a;
+}
+
+.dark-theme .button.is-primary {
+  background-color: #3273dc;
+  color: white;
+  border-color: #3273dc;
+}
+
+.dark-theme .button.is-primary:hover {
+  background-color: #2366d1;
+  border-color: #2366d1;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 799px) {
+  .db-query-container {
+    padding: 1rem;
+  }
+  
+  .columns {
+    display: block !important;
+  }
+  
+  .column {
+    width: 100% !important;
+  }
+}
+
+/* Table Styling */
+.table-container {
+  position: relative;
+  margin-bottom: 1.5rem;
+  height: 100%;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.table-wrapper.maximized-table {
+  max-height: calc(100vh - 250px);
+}
+
+.table {
+  font-size: 0.9rem;
+}
+
+.table thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f5f5f5;
+  z-index: 10;
+  font-weight: 600;
+  border-bottom: 2px solid #dbdbdb;
+}
+
+.dark-theme .table thead th {
+  background-color: #363636;
+  border-bottom: 2px solid #4a4a4a;
+}
+
+.table tbody tr:hover {
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+/* Fullscreen States */
+.is-fullheight {
+  min-height: calc(100vh - 200px);
+}
+
+/* Loading Animation */
+.button.is-loading.is-ghost {
+  background-color: transparent;
+  border: none;
+  color: #3273dc;
+}
+
+/* Section Spacing */
+.section {
+  padding: 1.5rem 0;
+}
+
+/* Level Responsive */
+@media screen and (max-width: 768px) {
+  .level {
+    display: block;
+  }
+  
+  .level-left,
+  .level-right {
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+}
+
+/* Box Improvements */
+.box {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.box .table-wrapper {
+  flex: 1;
+}
+
+.query {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.query .control {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.query .control textarea {
+  flex: 1;
+  min-height: 250px;
+  resize: vertical;
+}
+
+.dark-theme .box {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Button Improvements */
+.button {
+  transition: all 0.2s ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+/* Input & Textarea Improvements */
+.input,
+.textarea {
+  transition: border-color 0.2s ease;
+}
+
+.input:focus,
+.textarea:focus {
+  box-shadow: 0 0 0 0.125em rgba(50, 115, 220, 0.25);
+}
+
+/* Field Spacing */
+.field:not(:last-child) {
+  margin-bottom: 1rem;
+}
+
+/* Notification Improvements */
+.notification {
+  border-radius: 6px;
+}
+
+/* Custom Scrollbar */
+.table-wrapper::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.dark-theme .table-wrapper::-webkit-scrollbar-track {
+  background: #2a2a2a;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.dark-theme .table-wrapper::-webkit-scrollbar-thumb {
+  background: #4a4a4a;
+}
+
+.dark-theme .table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #5a5a5a;
+}
+
+/* Textarea SQL Styling */
+.textarea.is-family-monospace {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Title Spacing */
+.title {
+  margin-bottom: 1rem;
+}
+
+/* Responsive Table for Small Screens */
+@media screen and (max-width: 600px) {
+  .table {
+    font-size: 0.75rem;
+  }
+  
+  .table thead th,
+  .table tbody td {
+    padding: 0.5em;
+  }
+}
+
+/* Animation for Loading */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Smooth Transitions */
+* {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Better scaling for large screens */
+@media screen and (min-width: 1920px) {
+  .title.is-3 {
+    font-size: 2.5rem;
+  }
+  
+  .title.is-4 {
+    font-size: 2rem;
+  }
+  
+  .title.is-5 {
+    font-size: 1.5rem;
+  }
+  
+  .table {
+    font-size: 1rem;
+  }
+  
+  .button {
+    font-size: 1rem;
+  }
+  
+  .input,
+  .textarea {
+    font-size: 1rem;
+  }
+}
+
+@media screen and (min-width: 2560px) {
+  .title.is-3 {
+    font-size: 3rem;
+  }
+  
+  .title.is-4 {
+    font-size: 2.25rem;
+  }
+  
+  .title.is-5 {
+    font-size: 1.75rem;
+  }
+  
+  .table {
+    font-size: 1.1rem;
+  }
+  
+  .button {
+    font-size: 1.1rem;
+    padding: 0.75rem 1.5rem;
+  }
+  
+  .input,
+  .textarea {
+    font-size: 1.1rem;
+    padding: 0.75rem 1rem;
+  }
+  
+  .box {
+    padding: 2rem;
+  }
+}
+
+/* Improved column layout for wide screens */
+@media screen and (min-width: 1440px) {
+  .columns.is-multiline > .column.is-4 {
+    padding: 1rem;
+  }
+}
+
+@media screen and (min-width: 2560px) {
+  .columns.is-multiline > .column.is-4 {
+    padding: 1.5rem;
+  }
+  
+  .section {
+    padding: 2rem 0;
+  }
+}
+
+.maximize-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(128, 128, 128, 0.3);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.dark-theme .maximize-overlay {
+  background-color: rgba(80, 80, 80, 0.4);
+}
+
+.maximized-tables-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  padding: 2rem;
+  overflow-y: auto;
+  background-color: rgba(128, 128, 128, 0.3);
+}
+
+.dark-theme .maximized-tables-view {
+  background-color: rgba(80, 80, 80, 0.4);
+}
+
+.maximized-table-box {
+  height: calc(100vh - 150px);
+}
+
+.maximized-table-wrapper {
+  max-height: calc(100vh - 250px);
+  overflow-y: auto;
+}
+
+.table-selector-buttons {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  padding: 1rem 0;
+  margin-bottom: 1rem;
+}
+
+.table-selector-buttons .buttons {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.table-selector-buttons .button {
+  margin: 0.25rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.table-selector-buttons .button.is-primary {
+  box-shadow: 0 4px 6px rgba(50, 115, 220, 0.3);
+}
+
+.table-selector-buttons .button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+@media screen and (max-width: 768px) {
+  .maximized-tables-view {
+    padding: 1rem;
+  }
+  
+  .maximized-table-box {
+    height: calc(100vh - 180px);
+  }
+  
+  .table-selector-buttons .button {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* Animation برای transition */
+.maximized-tables-view,
+.maximize-overlay {
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
