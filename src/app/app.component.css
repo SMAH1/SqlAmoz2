@@ -89,6 +89,11 @@ button {
 
 #greet-input {
   margin-right: 5px;
+  width: 70%;
+}
+
+p.sql {
+  margin: 5px 5px;
 }
 
 @media (prefers-color-scheme: dark) {

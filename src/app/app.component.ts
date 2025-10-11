@@ -9,17 +9,20 @@ import { invoke } from "@tauri-apps/api/core";
   styleUrl: "./app.component.css",
 })
 export class AppComponent {
-  greetingMessage = "";
+  txt = "";
+  err = "";
 
   run_query(event: SubmitEvent, data: string): void {
     event.preventDefault();
 
     invoke<string>("run_query", { query: data })
     .then((text) => {
-      this.greetingMessage = text;
+      this.txt = text;
+      this.err = "";
     })
     .catch((error) => {
-      this.greetingMessage = "!!!!@" + error;
+      this.txt = "";
+      this.err = error;
     })
     ;
   }
