@@ -11,12 +11,16 @@ import { invoke } from "@tauri-apps/api/core";
 export class AppComponent {
   greetingMessage = "";
 
-  greet(event: SubmitEvent, name: string): void {
+  run_query(event: SubmitEvent, data: string): void {
     event.preventDefault();
 
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    invoke<string>("greet", { name }).then((text) => {
+    invoke<string>("run_query", { query: data })
+    .then((text) => {
       this.greetingMessage = text;
-    });
+    })
+    .catch((error) => {
+      this.greetingMessage = "!!!!@" + error;
+    })
+    ;
   }
 }
