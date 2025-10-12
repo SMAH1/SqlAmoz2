@@ -1,11 +1,11 @@
-
-
 /* Container */
 .db-query-container {
   min-height: 100vh;
   padding: 2rem;
   background-color: #f5f5f5;
   transition: background-color 0.3s ease, color 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Dark Theme */
@@ -89,20 +89,6 @@
 }
 
 /* Responsive Design */
-@media screen and (min-width: 800px) and (max-width: 1920px) {
-  .db-query-container {
-    padding: 1.5rem;
-  }
-}
-
-@media screen and (min-width: 1921px) {
-  .db-query-container {
-    max-width: 1920px;
-    margin: 0 auto;
-    padding: 2.5rem;
-  }
-}
-
 @media screen and (max-width: 799px) {
   .db-query-container {
     padding: 1rem;
@@ -121,16 +107,17 @@
 .table-container {
   position: relative;
   margin-bottom: 1.5rem;
+  height: 100%;
 }
 
 .table-wrapper {
   overflow-x: auto;
-  max-height: 400px;
+  max-height: 500px;
   overflow-y: auto;
 }
 
 .table-wrapper.maximized-table {
-  max-height: calc(100vh - 300px);
+  max-height: calc(100vh - 250px);
 }
 
 .table {
@@ -191,14 +178,30 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.query div {
+.box .table-wrapper {
+  flex: 1;
+}
+
+.query {
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.query div textarea {
-  height: calc(100% - 30px);
+.query .control {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.query .control textarea {
+  flex: 1;
+  min-height: 250px;
+  resize: vertical;
 }
 
 .dark-theme .box {
@@ -306,4 +309,82 @@
 /* Smooth Transitions */
 * {
   transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Better scaling for large screens */
+@media screen and (min-width: 1920px) {
+  .title.is-3 {
+    font-size: 2.5rem;
+  }
+  
+  .title.is-4 {
+    font-size: 2rem;
+  }
+  
+  .title.is-5 {
+    font-size: 1.5rem;
+  }
+  
+  .table {
+    font-size: 1rem;
+  }
+  
+  .button {
+    font-size: 1rem;
+  }
+  
+  .input,
+  .textarea {
+    font-size: 1rem;
+  }
+}
+
+@media screen and (min-width: 2560px) {
+  .title.is-3 {
+    font-size: 3rem;
+  }
+  
+  .title.is-4 {
+    font-size: 2.25rem;
+  }
+  
+  .title.is-5 {
+    font-size: 1.75rem;
+  }
+  
+  .table {
+    font-size: 1.1rem;
+  }
+  
+  .button {
+    font-size: 1.1rem;
+    padding: 0.75rem 1.5rem;
+  }
+  
+  .input,
+  .textarea {
+    font-size: 1.1rem;
+    padding: 0.75rem 1rem;
+  }
+  
+  .box {
+    padding: 2rem;
+  }
+}
+
+/* Improved column layout for wide screens */
+@media screen and (min-width: 1440px) {
+  .columns.is-multiline > .column.is-4 {
+    padding: 1rem;
+  }
+}
+
+@media screen and (min-width: 2560px) {
+  .columns.is-multiline > .column.is-4 {
+    padding: 1.5rem;
+  }
+  
+  .section {
+    padding: 2rem 0;
+  }
 }
