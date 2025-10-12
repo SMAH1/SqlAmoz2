@@ -29,12 +29,13 @@ interface QueryResult {
 export class DbQueryComponent implements OnInit {
   // Theme
   isDarkMode = false;
-
+  
   // Tables state
   tables: TableData[] = [];
   isLoadingTables = false;
   tablesError: string | null = null;
   maximizedTableIndex: number | null = null;
+  selectedTableIndices: Set<number> = new Set();
 
   // Query builder
   queryParams: QueryParam[] = [
@@ -58,9 +59,34 @@ export class DbQueryComponent implements OnInit {
   toggleTheme() {
     this.isDarkMode = !this.isDarkMode;
   }
-
   toggleTableMaximize(index: number) {
-    this.maximizedTableIndex = this.maximizedTableIndex === index ? null : index;
+    if (this.maximizedTableIndex === index) {
+      this.maximizedTableIndex = null;
+      this.selectedTableIndices.clear();
+    } else {
+      this.maximizedTableIndex = index;
+      this.selectedTableIndices.clear();
+      this.selectedTableIndices.add(index);
+    }
+  }
+
+  toggleTableSelection(index: number) {
+    if (this.maximizedTableIndex === null) return;
+    
+    if (this.selectedTableIndices.has(index)) {
+      if (index === this.maximizedTableIndex) return;
+      this.selectedTableIndices.delete(index);
+    } else {
+      this.selectedTableIndices.add(index);
+    }
+  }
+
+  isTableSelected(index: number): boolean {
+    return this.selectedTableIndices.has(index);
+  }
+
+  get isAnyTableMaximized(): boolean {
+    return this.maximizedTableIndex !== null;
   }
 
   toggleQueryResultMaximize() {

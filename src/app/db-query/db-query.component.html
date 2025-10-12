@@ -1,9 +1,12 @@
 <div class="db-query-container" [class.dark-theme]="isDarkMode">
+  
+  <div class="maximize-overlay" *ngIf="isAnyTableMaximized && !isQueryResultMaximized"></div>
+
   <!-- Header with Theme Toggle -->
-  <div class="level mb-5">
+  <div class="level mb-5" *ngIf="!isAnyTableMaximized || isQueryResultMaximized">
     <div class="level-left">
       <div class="level-item">
-        <h1 class="title is-3">Database Query Interface</h1>
+        <h1 class="title is-3">SQL Amoz 2</h1>
       </div>
     </div>
     <div class="level-right">
@@ -16,10 +19,27 @@
       </div>
     </div>
   </div>
-
   <!-- Row 1: Three Tables -->
-  <div class="section" *ngIf="!isQueryResultMaximized">
-    <h2 class="title is-4 mb-4">Data Tables</h2>
+  <div class="section" 
+       [class.maximized-tables-view]="isAnyTableMaximized"
+       *ngIf="!isQueryResultMaximized">
+    
+    <div class="table-selector-buttons mb-4" *ngIf="isAnyTableMaximized">
+      <div class="buttons has-addons is-centered">
+        <button *ngFor="let table of tables; let i = index"
+                class="button"
+                [class.is-primary]="isTableSelected(i)"
+                [class.is-outlined]="!isTableSelected(i)"
+                (click)="toggleTableSelection(i)">
+          <span class="icon">
+            <i class="fas fa-table"></i>
+          </span>
+          <span>{{ table.name }}</span>
+        </button>
+      </div>
+    </div>
+
+    <h2 class="title is-4 mb-4" *ngIf="!isAnyTableMaximized">Data Tables</h2>
     
     <!-- Loading State -->
     <div *ngIf="isLoadingTables" class="has-text-centered py-6">
@@ -36,10 +56,10 @@
     <!-- Tables Grid -->
     <div *ngIf="!isLoadingTables && !tablesError" class="columns is-multiline">
       <div *ngFor="let table of tables; let i = index" 
-           [class.is-12]="maximizedTableIndex === i"
-           [class.is-4]="maximizedTableIndex === null"
+           [class.is-hidden]="isAnyTableMaximized && !isTableSelected(i)"
+           [class]="isAnyTableMaximized ? 'column is-' + (12 / selectedTableIndices.size) : 'column is-4'"
            class="column">
-        <div class="box table-container">
+        <div class="box table-container" [class.maximized-table-box]="isAnyTableMaximized">
           <div class="level mb-3">
             <div class="level-left">
               <div class="level-item">
@@ -58,7 +78,7 @@
             </div>
           </div>
           
-          <div class="table-wrapper">
+          <div class="table-wrapper" [class.maximized-table-wrapper]="isAnyTableMaximized">
             <table class="table is-fullwidth is-striped is-hoverable">
               <thead>
                 <tr>
@@ -76,9 +96,8 @@
       </div>
     </div>
   </div>
-
   <!-- Row 2: Query Builder -->
-  <div class="section" *ngIf="!maximizedTableIndex && maximizedTableIndex !== 0">
+  <div class="section" *ngIf="!isAnyTableMaximized && !isQueryResultMaximized">
     <h2 class="title is-4 mb-4">Query Builder</h2>
     
     <div class="columns">
@@ -123,9 +142,10 @@
       </div>
     </div>
   </div>
-
   <!-- Row 3: Query Results -->
-  <div class="section" [class.is-fullheight]="isQueryResultMaximized">
+  <div class="section" 
+       [class.is-fullheight]="isQueryResultMaximized"
+       *ngIf="!isAnyTableMaximized">
     <div class="level mb-4">
       <div class="level-left">
         <div class="level-item">

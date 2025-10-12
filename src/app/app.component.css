@@ -19,12 +19,10 @@
 }
 
 .container {
-  margin: 0;
   padding: 2px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: 100vw;
 }
 
 .logo {
