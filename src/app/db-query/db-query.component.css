@@ -9,6 +9,13 @@
   flex-direction: column;
 }
 
+hr {
+  margin: 0 5%;
+  height: 2px;
+  border-top: 5px solid #AAA;
+  border-radius: 3px;
+}
+
 /* Navbar burger styling */
 .navbar-burger {
   cursor: pointer;
@@ -173,6 +180,11 @@
 .dark-theme .button.is-primary:hover {
   background-color: #2366d1;
   border-color: #2366d1;
+}
+
+.dark-theme hr {
+  border-top: 5px solid #515151;
+  border-radius: 3px;
 }
 
 /* Responsive Design */

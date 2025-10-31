@@ -67,7 +67,7 @@
     </div>
 
     <!-- Tables Grid -->
-    <div *ngIf="!isLoadingTables && !tablesError" class="columns is-multiline">
+    <div id="row_source" *ngIf="!isLoadingTables && !tablesError" class="columns is-multiline">
       <div *ngFor="let table of tables; let i = index" 
            [class.is-hidden]="isAnyTableMaximized && !isTableSelected(i)"
            [class]="isAnyTableMaximized ? 'column is-' + (12 / selectedTableIndices.size) : 'column is-4'"
@@ -110,8 +110,10 @@
     </div>
   </div>
 
+  <hr />
+
   <!-- Row 2: Query Builder -->
-  <div class="section" *ngIf="!isAnyTableMaximized && !isQueryResultMaximized">
+  <div id="row_query" class="section" *ngIf="!isAnyTableMaximized && !isQueryResultMaximized">
     
     <div class="columns">
       <!-- Left Column: Query Parameters -->
@@ -157,7 +159,7 @@
   </div>
   
   <!-- Row 3: Query Results -->
-  <div class="section" 
+  <div id="row_result" class="section" 
        [class.is-fullheight]="isQueryResultMaximized"
        *ngIf="!isAnyTableMaximized">
     <div class="level mb-4">
