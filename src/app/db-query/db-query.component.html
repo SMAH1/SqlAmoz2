@@ -1,24 +1,39 @@
 <div class="db-query-container" [class.dark-theme]="isDarkMode">
   
   <div class="maximize-overlay" *ngIf="isAnyTableMaximized && !isQueryResultMaximized"></div>
+    <!-- Header with Theme Toggle - Bulma Navbar -->
+  <nav class="navbar" [class.is-dark]="isDarkMode" *ngIf="!isAnyTableMaximized || isQueryResultMaximized" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <div class="navbar-item">
+        <h1 class="title is-4 mb-0">SQL Amoz 2</h1>
+      </div>
+      <a class="navbar-burger" 
+         role="button" 
+         aria-label="menu" 
+         [attr.aria-expanded]="isNavbarActive"
+         (click)="toggleNavbar()"
+         [class.is-active]="isNavbarActive">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
 
-  <!-- Header with Theme Toggle -->
-  <div class="level mb-5" *ngIf="!isAnyTableMaximized || isQueryResultMaximized">
-    <div class="level-left">
-      <div class="level-item">
-        <h1 class="title is-3">SQL Amoz 2</h1>
+    <div class="navbar-menu" [class.is-active]="isNavbarActive">
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <button class="button is-ghost" (click)="toggleTheme()" title="Toggle dark mode">
+              <span class="icon">
+                <i class="fas fa-lg" [class.fa-moon]="!isDarkMode" [class.fa-sun]="isDarkMode"></i>
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="level-right">
-      <div class="level-item">
-        <button class="button" (click)="toggleTheme()">
-          <span class="icon">
-            <i class="fas" [class.fa-moon]="!isDarkMode" [class.fa-sun]="isDarkMode"></i>
-          </span>
-        </button>
-      </div>
-    </div>
-  </div>
+  </nav>
+  
   <!-- Row 1: Three Tables -->
   <div class="section" 
        [class.maximized-tables-view]="isAnyTableMaximized"
@@ -39,8 +54,6 @@
       </div>
     </div>
 
-    <h2 class="title is-4 mb-4" *ngIf="!isAnyTableMaximized">Data Tables</h2>
-    
     <!-- Loading State -->
     <div *ngIf="isLoadingTables" class="has-text-centered py-6">
       <button class="button is-loading is-large is-ghost"></button>
@@ -96,9 +109,9 @@
       </div>
     </div>
   </div>
+
   <!-- Row 2: Query Builder -->
   <div class="section" *ngIf="!isAnyTableMaximized && !isQueryResultMaximized">
-    <h2 class="title is-4 mb-4">Query Builder</h2>
     
     <div class="columns">
       <!-- Left Column: Query Parameters -->
@@ -142,6 +155,7 @@
       </div>
     </div>
   </div>
+  
   <!-- Row 3: Query Results -->
   <div class="section" 
        [class.is-fullheight]="isQueryResultMaximized"
@@ -149,7 +163,7 @@
     <div class="level mb-4">
       <div class="level-left">
         <div class="level-item">
-          <h2 class="title is-4">Query Results</h2>
+          &nbsp;
         </div>
       </div>
       <div class="level-right" *ngIf="queryResult.data.length > 0">
@@ -159,7 +173,6 @@
               <i class="fas" [class.fa-expand]="!isQueryResultMaximized" 
                  [class.fa-compress]="isQueryResultMaximized"></i>
             </span>
-            <span>{{ isQueryResultMaximized ? 'Minimize' : 'Maximize' }}</span>
           </button>
         </div>
       </div>

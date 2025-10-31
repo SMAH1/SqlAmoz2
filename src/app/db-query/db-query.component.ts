@@ -30,6 +30,9 @@ export class DbQueryComponent implements OnInit {
   // Theme
   isDarkMode = false;
   
+  // Navbar
+  isNavbarActive = false;
+  
   // Tables state
   tables: TableData[] = [];
   isLoadingTables = false;
@@ -59,6 +62,11 @@ export class DbQueryComponent implements OnInit {
   toggleTheme() {
     this.isDarkMode = !this.isDarkMode;
   }
+
+  toggleNavbar() {
+    this.isNavbarActive = !this.isNavbarActive;
+  }
+
   toggleTableMaximize(index: number) {
     if (this.maximizedTableIndex === index) {
       this.maximizedTableIndex = null;
