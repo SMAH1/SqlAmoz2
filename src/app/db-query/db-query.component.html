@@ -113,23 +113,34 @@
   <hr />
 
   <!-- Row 2: Query Builder -->
-  <div id="row_query" class="section" *ngIf="!isAnyTableMaximized && !isQueryResultMaximized">
+  <div id="row_query"
+    class="section"
+    *ngIf="!isAnyTableMaximized && !isQueryResultMaximized"
+    style="padding-bottom: 0.5rem;">
     
     <div class="columns">
       <!-- Left Column: Query Parameters -->
       <div class="column is-6">
         <div class="box">
-          <div class="field" *ngFor="let param of queryParams">
-            <label class="label">{{ param.label }}</label>
-            <div class="control">
-              <input class="input" type="text" 
-                     [(ngModel)]="param.value" 
-                     [placeholder]="param.placeholder"
-                     (keyup.enter)="executeQuery()">
+          <div class="field" *ngFor="let param of queryParams" style="margin-bottom: 0.5rem">
+            <div class="field-body">
+              <div class="field has-addons">
+                <div class="control">
+                  <button class="button is-static" style="min-width: 8rem">
+                    {{ param.label }}
+                  </button>
+                </div>
+                <div class="control is-expanded">
+                  <input class="input" type="text" 
+                         [(ngModel)]="param.value" 
+                         [placeholder]="param.placeholder"
+                         (keyup.enter)="executeQuery()">
+                </div>
+              </div>
             </div>
           </div>
           
-          <div class="field mt-5">
+          <div class="field mt-5" style="margin-top: 0.5rem !important">
             <div class="control">
               <button class="button is-primary is-fullwidth" 
                       (click)="executeQuery()"
@@ -137,7 +148,7 @@
                 <span class="icon">
                   <i class="fas fa-play"></i>
                 </span>
-                <span>Execute Query</span>
+                <span>Execute</span>
               </button>
             </div>
           </div>
@@ -162,24 +173,8 @@
   <!-- Row 3: Query Results -->
   <div id="row_result" class="section" 
        [class.is-fullheight]="isQueryResultMaximized"
-       *ngIf="!isAnyTableMaximized">
-    <div class="level mb-4">
-      <div class="level-left">
-        <div class="level-item">
-          &nbsp;
-        </div>
-      </div>
-      <div class="level-right" *ngIf="queryResult.data.length > 0">
-        <div class="level-item">
-          <button class="button is-small" (click)="toggleQueryResultMaximize()">
-            <span class="icon">
-              <i class="fas" [class.fa-expand]="!isQueryResultMaximized" 
-                 [class.fa-compress]="isQueryResultMaximized"></i>
-            </span>
-          </button>
-        </div>
-      </div>
-    </div>
+       *ngIf="!isAnyTableMaximized"
+       style="padding-top: 0.5rem;">
 
     <!-- Loading State -->
     <div *ngIf="isLoadingQuery" class="has-text-centered py-6">
@@ -221,7 +216,16 @@
         <p class="has-text-grey">
           Total Results: <strong>{{ queryResult.data.length }}</strong>
         </p>
+        <div class="level-item" style="float: right">
+          <button class="button is-small" (click)="toggleQueryResultMaximize()">
+            <span class="icon">
+              <i class="fas" [class.fa-expand]="!isQueryResultMaximized" 
+                 [class.fa-compress]="isQueryResultMaximized"></i>
+            </span>
+          </button>
+        </div>
       </div>
     </div>
+
   </div>
 </div>

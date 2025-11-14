@@ -233,7 +233,7 @@ hr {
 
 .table-wrapper {
   overflow-x: auto;
-  max-height: 500px;
+  max-height: 15rem;
   overflow-y: auto;
 }
 
