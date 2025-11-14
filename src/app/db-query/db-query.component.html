@@ -124,7 +124,8 @@
             <div class="control">
               <input class="input" type="text" 
                      [(ngModel)]="param.value" 
-                     [placeholder]="param.placeholder">
+                     [placeholder]="param.placeholder"
+                     (keyup.enter)="executeQuery()">
             </div>
           </div>
           
