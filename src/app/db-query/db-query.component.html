@@ -1,24 +1,39 @@
 <div class="db-query-container" [class.dark-theme]="isDarkMode">
   
   <div class="maximize-overlay" *ngIf="isAnyTableMaximized && !isQueryResultMaximized"></div>
+    <!-- Header with Theme Toggle - Bulma Navbar -->
+  <nav class="navbar" [class.is-dark]="isDarkMode" *ngIf="!isAnyTableMaximized || isQueryResultMaximized" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <div class="navbar-item">
+        <h1 class="title is-4 mb-0">SQL Amoz 2</h1>
+      </div>
+      <a class="navbar-burger" 
+         role="button" 
+         aria-label="menu" 
+         [attr.aria-expanded]="isNavbarActive"
+         (click)="toggleNavbar()"
+         [class.is-active]="isNavbarActive">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
 
-  <!-- Header with Theme Toggle -->
-  <div class="level mb-5" *ngIf="!isAnyTableMaximized || isQueryResultMaximized">
-    <div class="level-left">
-      <div class="level-item">
-        <h1 class="title is-3">SQL Amoz 2</h1>
+    <div class="navbar-menu" [class.is-active]="isNavbarActive">
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <button class="button is-ghost" (click)="toggleTheme()" title="Toggle dark mode">
+              <span class="icon">
+                <i class="fas fa-lg" [class.fa-moon]="!isDarkMode" [class.fa-sun]="isDarkMode"></i>
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="level-right">
-      <div class="level-item">
-        <button class="button" (click)="toggleTheme()">
-          <span class="icon">
-            <i class="fas" [class.fa-moon]="!isDarkMode" [class.fa-sun]="isDarkMode"></i>
-          </span>
-        </button>
-      </div>
-    </div>
-  </div>
+  </nav>
+  
   <!-- Row 1: Three Tables -->
   <div class="section" 
        [class.maximized-tables-view]="isAnyTableMaximized"
@@ -39,8 +54,6 @@
       </div>
     </div>
 
-    <h2 class="title is-4 mb-4" *ngIf="!isAnyTableMaximized">Data Tables</h2>
-    
     <!-- Loading State -->
     <div *ngIf="isLoadingTables" class="has-text-centered py-6">
       <button class="button is-loading is-large is-ghost"></button>
@@ -54,7 +67,7 @@
     </div>
 
     <!-- Tables Grid -->
-    <div *ngIf="!isLoadingTables && !tablesError" class="columns is-multiline">
+    <div id="row_source" *ngIf="!isLoadingTables && !tablesError" class="columns is-multiline">
       <div *ngFor="let table of tables; let i = index" 
            [class.is-hidden]="isAnyTableMaximized && !isTableSelected(i)"
            [class]="isAnyTableMaximized ? 'column is-' + (12 / selectedTableIndices.size) : 'column is-4'"
@@ -96,24 +109,38 @@
       </div>
     </div>
   </div>
+
+  <hr />
+
   <!-- Row 2: Query Builder -->
-  <div class="section" *ngIf="!isAnyTableMaximized && !isQueryResultMaximized">
-    <h2 class="title is-4 mb-4">Query Builder</h2>
+  <div id="row_query"
+    class="section"
+    *ngIf="!isAnyTableMaximized && !isQueryResultMaximized"
+    style="padding-bottom: 0.5rem;">
     
     <div class="columns">
       <!-- Left Column: Query Parameters -->
       <div class="column is-6">
         <div class="box">
-          <div class="field" *ngFor="let param of queryParams">
-            <label class="label">{{ param.label }}</label>
-            <div class="control">
-              <input class="input" type="text" 
-                     [(ngModel)]="param.value" 
-                     [placeholder]="param.placeholder">
+          <div class="field" *ngFor="let param of queryParams" style="margin-bottom: 0.5rem">
+            <div class="field-body">
+              <div class="field has-addons">
+                <div class="control">
+                  <button class="button is-static" style="min-width: 8rem">
+                    {{ param.label }}
+                  </button>
+                </div>
+                <div class="control is-expanded">
+                  <input class="input" type="text" 
+                         [(ngModel)]="param.value" 
+                         [placeholder]="param.placeholder"
+                         (keyup.enter)="executeQuery()">
+                </div>
+              </div>
             </div>
           </div>
           
-          <div class="field mt-5">
+          <div class="field mt-5" style="margin-top: 0.5rem !important">
             <div class="control">
               <button class="button is-primary is-fullwidth" 
                       (click)="executeQuery()"
@@ -121,7 +148,7 @@
                 <span class="icon">
                   <i class="fas fa-play"></i>
                 </span>
-                <span>Execute Query</span>
+                <span>Execute</span>
               </button>
             </div>
           </div>
@@ -142,28 +169,12 @@
       </div>
     </div>
   </div>
+  
   <!-- Row 3: Query Results -->
-  <div class="section" 
+  <div id="row_result" class="section" 
        [class.is-fullheight]="isQueryResultMaximized"
-       *ngIf="!isAnyTableMaximized">
-    <div class="level mb-4">
-      <div class="level-left">
-        <div class="level-item">
-          <h2 class="title is-4">Query Results</h2>
-        </div>
-      </div>
-      <div class="level-right" *ngIf="queryResult.data.length > 0">
-        <div class="level-item">
-          <button class="button is-small" (click)="toggleQueryResultMaximize()">
-            <span class="icon">
-              <i class="fas" [class.fa-expand]="!isQueryResultMaximized" 
-                 [class.fa-compress]="isQueryResultMaximized"></i>
-            </span>
-            <span>{{ isQueryResultMaximized ? 'Minimize' : 'Maximize' }}</span>
-          </button>
-        </div>
-      </div>
-    </div>
+       *ngIf="!isAnyTableMaximized"
+       style="padding-top: 0.5rem;">
 
     <!-- Loading State -->
     <div *ngIf="isLoadingQuery" class="has-text-centered py-6">
@@ -205,7 +216,16 @@
         <p class="has-text-grey">
           Total Results: <strong>{{ queryResult.data.length }}</strong>
         </p>
+        <div class="level-item" style="float: right">
+          <button class="button is-small" (click)="toggleQueryResultMaximize()">
+            <span class="icon">
+              <i class="fas" [class.fa-expand]="!isQueryResultMaximized" 
+                 [class.fa-compress]="isQueryResultMaximized"></i>
+            </span>
+          </button>
+        </div>
       </div>
     </div>
+
   </div>
 </div>

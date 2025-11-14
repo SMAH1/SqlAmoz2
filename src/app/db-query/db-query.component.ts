@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { invoke } from '@tauri-apps/api/core';
 
 interface TableData {
   name: string;
@@ -30,6 +31,9 @@ export class DbQueryComponent implements OnInit {
   // Theme
   isDarkMode = false;
   
+  // Navbar
+  isNavbarActive = false;
+  
   // Tables state
   tables: TableData[] = [];
   isLoadingTables = false;
@@ -39,11 +43,11 @@ export class DbQueryComponent implements OnInit {
 
   // Query builder
   queryParams: QueryParam[] = [
-    { label: 'SELECT', value: '*', placeholder: 'e.g., id, name, email' },
-    { label: 'FROM', value: '', placeholder: 'e.g., users' },
-    { label: 'WHERE', value: '', placeholder: 'e.g., age > 18' },
-    { label: 'ORDER BY', value: '', placeholder: 'e.g., created_at DESC' },
-    { label: 'LIMIT', value: '', placeholder: 'e.g., 100' }
+    { label: 'SELECT', value: '*', placeholder: 'Select columns' },
+    { label: 'FROM', value: '', placeholder: 'Which tables' },
+    { label: 'WHERE', value: '', placeholder: 'Select row' },
+    { label: 'ORDER BY', value: '', placeholder: 'Order or rows' },
+    { label: 'LIMIT', value: '', placeholder: 'Limitation on rows of result' }
   ];
 
   // Query results
@@ -59,6 +63,11 @@ export class DbQueryComponent implements OnInit {
   toggleTheme() {
     this.isDarkMode = !this.isDarkMode;
   }
+
+  toggleNavbar() {
+    this.isNavbarActive = !this.isNavbarActive;
+  }
+
   toggleTableMaximize(index: number) {
     if (this.maximizedTableIndex === index) {
       this.maximizedTableIndex = null;
@@ -125,55 +134,43 @@ export class DbQueryComponent implements OnInit {
     this.tablesError = null;
 
     try {
-      // Simulate API call with 500ms delay
-      await this.delay(500);
+      // Fetch data from three tables via Tauri
+      const personsResult = await invoke<string>('run_query', { query: 'SELECT Id, Name, Age, Grade, [Score Quran] FROM Persons' });
+      const coursesResult = await invoke<string>('run_query', { query: 'SELECT Id, PersonId, Name, Score FROM Courses' });
+      const programmingsResult = await invoke<string>('run_query', { query: 'SELECT Id, PersonId, Language, Grade FROM Programmings' });
 
-      // Mock data for three tables
+      // Parse JSON results
+      const personsResult_data = JSON.parse(personsResult);
+      const coursesResult_data = JSON.parse(coursesResult);
+      const programmingsResult_data = JSON.parse(programmingsResult);
+
       this.tables = [
         {
-          name: 'Users',
-          columns: ['ID', 'Name', 'Email', 'Age'],
-          data: [
-            { ID: 1, Name: 'John Doe', Email: 'john@example.com', Age: 28 },
-            { ID: 2, Name: 'Jane Smith', Email: 'jane@example.com', Age: 34 },
-            { ID: 3, Name: 'Bob Johnson', Email: 'bob@example.com', Age: 45 },
-            { ID: 4, Name: 'Alice Brown', Email: 'alice@example.com', Age: 23 },
-            { ID: 5, Name: 'Charlie Wilson', Email: 'charlie@example.com', Age: 31 }
-          ]
+          name: 'Persons',
+          columns: personsResult_data.columns,
+          data: personsResult_data.data
         },
         {
-          name: 'Products',
-          columns: ['Product_ID', 'Product_Name', 'Price', 'Stock'],
-          data: [
-            { Product_ID: 101, Product_Name: 'Laptop', Price: 999.99, Stock: 15 },
-            { Product_ID: 102, Product_Name: 'Mouse', Price: 29.99, Stock: 150 },
-            { Product_ID: 103, Product_Name: 'Keyboard', Price: 79.99, Stock: 87 },
-            { Product_ID: 104, Product_Name: 'Monitor', Price: 299.99, Stock: 42 },
-            { Product_ID: 105, Product_Name: 'Headphones', Price: 149.99, Stock: 63 }
-          ]
+          name: 'Courses',
+          columns: coursesResult_data.columns,
+          data: coursesResult_data.data
         },
         {
-          name: 'Orders',
-          columns: ['Order_ID', 'Customer_ID', 'Order_Date', 'Total_Amount'],
-          data: [
-            { Order_ID: 1001, Customer_ID: 1, Order_Date: '2025-10-01', Total_Amount: 1299.98 },
-            { Order_ID: 1002, Customer_ID: 2, Order_Date: '2025-10-03', Total_Amount: 449.97 },
-            { Order_ID: 1003, Customer_ID: 3, Order_Date: '2025-10-05', Total_Amount: 999.99 },
-            { Order_ID: 1004, Customer_ID: 1, Order_Date: '2025-10-08', Total_Amount: 79.99 },
-            { Order_ID: 1005, Customer_ID: 4, Order_Date: '2025-10-10', Total_Amount: 179.98 }
-          ]
+          name: 'Programmings',
+          columns: programmingsResult_data.columns,
+          data: programmingsResult_data.data
         }
       ];
 
     } catch (error) {
-      this.tablesError = 'Failed to load tables data. Please try again.';
+      this.tablesError = `Failed to load tables data: ${error}`;
       console.error(error);
     } finally {
       this.isLoadingTables = false;
     }
   }
 
-  // Mock query execution - replace this with your actual query logic
+  // Execute query via Tauri
   async executeQuery() {
     if (!this.queryParams[1].value) {
       this.queryError = 'Please specify a table name in the FROM clause';
@@ -184,60 +181,20 @@ export class DbQueryComponent implements OnInit {
     this.queryError = null;
 
     try {
-      // Simulate API call with 500ms delay
-      await this.delay(500);
-
-      // Mock query results - this should be replaced with actual query execution
-      // For demonstration, we'll return data from the selected table
-      const tableName = this.queryParams[1].value.toLowerCase();
-      let mockData: any[] = [];
-      let columns: string[] = [];
-
-      if (tableName.includes('user')) {
-        columns = ['ID', 'Name', 'Email', 'Age', 'Created_At'];
-        mockData = [
-          { ID: 1, Name: 'John Doe', Email: 'john@example.com', Age: 28, Created_At: '2025-01-15' },
-          { ID: 2, Name: 'Jane Smith', Email: 'jane@example.com', Age: 34, Created_At: '2025-02-20' },
-          { ID: 3, Name: 'Bob Johnson', Email: 'bob@example.com', Age: 45, Created_At: '2025-03-10' },
-          { ID: 4, Name: 'Alice Brown', Email: 'alice@example.com', Age: 23, Created_At: '2025-04-05' },
-          { ID: 5, Name: 'Charlie Wilson', Email: 'charlie@example.com', Age: 31, Created_At: '2025-05-12' }
-        ];
-      } else if (tableName.includes('product')) {
-        columns = ['Product_ID', 'Product_Name', 'Category', 'Price', 'Stock'];
-        mockData = [
-          { Product_ID: 101, Product_Name: 'Laptop', Category: 'Electronics', Price: 999.99, Stock: 15 },
-          { Product_ID: 102, Product_Name: 'Mouse', Category: 'Accessories', Price: 29.99, Stock: 150 },
-          { Product_ID: 103, Product_Name: 'Keyboard', Category: 'Accessories', Price: 79.99, Stock: 87 }
-        ];
-      } else if (tableName.includes('order')) {
-        columns = ['Order_ID', 'Customer_ID', 'Order_Date', 'Total_Amount', 'Status'];
-        mockData = [
-          { Order_ID: 1001, Customer_ID: 1, Order_Date: '2025-10-01', Total_Amount: 1299.98, Status: 'Delivered' },
-          { Order_ID: 1002, Customer_ID: 2, Order_Date: '2025-10-03', Total_Amount: 449.97, Status: 'Processing' },
-          { Order_ID: 1003, Customer_ID: 3, Order_Date: '2025-10-05', Total_Amount: 999.99, Status: 'Shipped' }
-        ];
-      } else {
-        columns = ['Column_1', 'Column_2', 'Column_3'];
-        mockData = [
-          { Column_1: 'Value 1', Column_2: 'Value 2', Column_3: 'Value 3' },
-          { Column_1: 'Value 4', Column_2: 'Value 5', Column_3: 'Value 6' }
-        ];
-      }
+      // Execute the generated SQL query via Tauri
+      const result = await invoke<string>('run_query', { query: this.generatedSQL });
+      const parsedResult = JSON.parse(result);
 
       this.queryResult = {
-        columns: columns,
-        data: mockData
+        columns: parsedResult.columns,
+        data: parsedResult.data
       };
 
     } catch (error) {
-      this.queryError = 'Failed to execute query. Please check your SQL syntax.';
+      this.queryError = `Failed to execute query: ${error}`;
       console.error(error);
     } finally {
       this.isLoadingQuery = false;
     }
-  }
-
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
