@@ -13,14 +13,28 @@
     "windows": [
       {
         "title": "SqlAmoz2",
-        "width": 800,
-        "height": 600,
+        "width": 1200,
+        "height": 800,
         "minWidth": 800,
-        "minHeight": 600
+        "minHeight": 600,
+        "center": true
       }
     ],
     "security": {
       "csp": null
+    }
+  },
+  "plugins": {
+    "cli": {
+      "description": "SQL Amoz 2 - SQL Training Application",
+      "args": [
+        {
+          "name": "form",
+          "short": "f",
+          "takesValue": true,
+          "description": "Select form: select, where, orderby, limit, from, query"
+        }
+      ]
     }
   },
   "bundle": {

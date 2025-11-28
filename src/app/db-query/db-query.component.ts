@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { invoke } from '@tauri-apps/api/core';
 
 interface TableData {
@@ -13,6 +14,7 @@ interface QueryParam {
   label: string;
   value: string;
   placeholder: string;
+  visible: boolean;
 }
 
 interface QueryResult {
@@ -43,11 +45,11 @@ export class DbQueryComponent implements OnInit {
 
   // Query builder
   queryParams: QueryParam[] = [
-    { label: 'SELECT', value: '*', placeholder: 'Select columns' },
-    { label: 'FROM', value: '', placeholder: 'Which tables' },
-    { label: 'WHERE', value: '', placeholder: 'Select row' },
-    { label: 'ORDER BY', value: '', placeholder: 'Order or rows' },
-    { label: 'LIMIT', value: '', placeholder: 'Limitation on rows of result' }
+    { label: 'SELECT', value: '*', placeholder: 'Select columns', visible: true },
+    { label: 'FROM', value: '', placeholder: 'Which tables', visible: true },
+    { label: 'WHERE', value: '', placeholder: 'Select row', visible: true },
+    { label: 'ORDER BY', value: '', placeholder: 'Order or rows', visible: true },
+    { label: 'LIMIT', value: '', placeholder: 'Limitation on rows of result', visible: true }
   ];
 
   // Query results
@@ -56,8 +58,64 @@ export class DbQueryComponent implements OnInit {
   queryError: string | null = null;
   isQueryResultMaximized = false;
 
+  // View config
+  hiddenTables: string[] = [];
+  showGeneratedSQL = true;
+
+  constructor(private route: ActivatedRoute) {}
+
   ngOnInit() {
-    this.loadTablesData();
+    // Read query parameters to determine hidden tables
+    this.route.queryParams.subscribe(params => {
+      const hiddenParam = params['view'];
+      if(hiddenParam === 'select')
+      {
+        this.hiddenTables.push("Programmings");
+        this.hiddenTables.push("Courses");
+        this.showGeneratedSQL = false;
+        
+        this.queryParams[1].value = 'Persons'; // FROM
+        this.queryParams[1].visible = false; // FROM
+        this.queryParams[2].visible = false; // WHERE
+        this.queryParams[3].visible = false; // ORDER BY
+        this.queryParams[4].visible = false; // LIMIT
+      }
+      if(hiddenParam === 'where')
+      {
+        this.hiddenTables.push("Programmings");
+        this.hiddenTables.push("Courses");
+        this.showGeneratedSQL = false;
+        
+        this.queryParams[1].value = 'Persons'; // FROM
+        this.queryParams[1].visible = false; // FROM
+        this.queryParams[3].visible = false; // ORDER BY
+        this.queryParams[4].visible = false; // LIMIT
+      }
+      if(hiddenParam === 'orderby')
+      {
+        this.hiddenTables.push("Programmings");
+        this.hiddenTables.push("Courses");
+        this.showGeneratedSQL = false;
+        
+        this.queryParams[1].value = 'Persons'; // FROM
+        this.queryParams[1].visible = false; // FROM
+        this.queryParams[4].visible = false; // LIMIT
+      }
+      if(hiddenParam === 'limit')
+      {
+        this.hiddenTables.push("Programmings");
+        this.hiddenTables.push("Courses");
+        this.showGeneratedSQL = false;
+        
+        this.queryParams[1].value = 'Persons'; // FROM
+        this.queryParams[1].visible = false; // FROM
+      }
+      if(hiddenParam === 'from')
+      {
+        this.showGeneratedSQL = false;
+      }
+      this.loadTablesData();
+    });
   }
 
   toggleTheme() {
@@ -144,7 +202,7 @@ export class DbQueryComponent implements OnInit {
       const coursesResult_data = JSON.parse(coursesResult);
       const programmingsResult_data = JSON.parse(programmingsResult);
 
-      this.tables = [
+      const allTables = [
         {
           name: 'Persons',
           columns: personsResult_data.columns,
@@ -161,6 +219,11 @@ export class DbQueryComponent implements OnInit {
           data: programmingsResult_data.data
         }
       ];
+
+      // Filter out hidden tables based on query parameters
+      this.tables = allTables.filter(table => 
+        !this.hiddenTables.includes(table.name)
+      );
 
     } catch (error) {
       this.tablesError = `Failed to load tables data: ${error}`;

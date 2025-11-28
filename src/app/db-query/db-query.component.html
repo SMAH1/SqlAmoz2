@@ -70,7 +70,7 @@
     <div id="row_source" *ngIf="!isLoadingTables && !tablesError" class="columns is-multiline">
       <div *ngFor="let table of tables; let i = index" 
            [class.is-hidden]="isAnyTableMaximized && !isTableSelected(i)"
-           [class]="isAnyTableMaximized ? 'column is-' + (12 / selectedTableIndices.size) : 'column is-4'"
+           [class]="isAnyTableMaximized ? 'column is-' + (12 / selectedTableIndices.size) : 'column is-' + (12 / tables.length)"
            class="column">
         <div class="box table-container" [class.maximized-table-box]="isAnyTableMaximized">
           <div class="level mb-3">
@@ -120,24 +120,26 @@
     
     <div class="columns">
       <!-- Left Column: Query Parameters -->
-      <div class="column is-6">
+      <div [class]="showGeneratedSQL ? 'column is-6' : 'column is-12'">
         <div class="box">
           <div class="field" *ngFor="let param of queryParams" style="margin-bottom: 0.5rem">
-            <div class="field-body">
-              <div class="field has-addons">
-                <div class="control">
-                  <button class="button is-static" style="min-width: 8rem">
-                    {{ param.label }}
-                  </button>
-                </div>
-                <div class="control is-expanded">
-                  <input class="input" type="text" 
-                         [(ngModel)]="param.value" 
-                         [placeholder]="param.placeholder"
-                         (keyup.enter)="executeQuery()">
+            <ng-container *ngIf="param.visible">
+              <div class="field-body">
+                <div class="field has-addons">
+                  <div class="control">
+                    <button class="button is-static" style="min-width: 8rem">
+                      {{ param.label }}
+                    </button>
+                  </div>
+                  <div class="control is-expanded">
+                    <input class="input" type="text" 
+                           [(ngModel)]="param.value" 
+                           [placeholder]="param.placeholder"
+                           (keyup.enter)="executeQuery()">
+                  </div>
                 </div>
               </div>
-            </div>
+            </ng-container>
           </div>
           
           <div class="field mt-5" style="margin-top: 0.5rem !important">
@@ -156,7 +158,7 @@
       </div>
 
       <!-- Right Column: Generated SQL -->
-      <div class="column is-6">
+      <div class="column is-6" *ngIf="showGeneratedSQL">
         <div class="box query">
           <label class="label">Generated SQL Query</label>
           <div class="control">
