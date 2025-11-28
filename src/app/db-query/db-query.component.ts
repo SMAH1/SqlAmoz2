@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { invoke } from '@tauri-apps/api/core';
+import { listen, UnlistenFn } from '@tauri-apps/api/event';
 
 interface TableData {
   name: string;
@@ -20,6 +21,11 @@ interface QueryResult {
   data: any[];
 }
 
+interface ElementVisibilityPayload {
+  element_id: string;
+  visible: boolean;
+}
+
 @Component({
   selector: 'app-db-query',
   standalone: true,
@@ -27,7 +33,7 @@ interface QueryResult {
   templateUrl: './db-query.component.html',
   styleUrl: './db-query.component.css'
 })
-export class DbQueryComponent implements OnInit {
+export class DbQueryComponent implements OnInit, OnDestroy {
   // Theme
   isDarkMode = false;
   
@@ -40,6 +46,16 @@ export class DbQueryComponent implements OnInit {
   tablesError: string | null = null;
   maximizedTableIndex: number | null = null;
   selectedTableIndices: Set<number> = new Set();
+  
+  // Element visibility control from Tauri
+  elementVisibility: { [key: string]: boolean } = {
+    'table-persons': true,
+    'table-courses': true,
+    'table-programmings': true,
+    'query-builder': true
+  };
+  
+  private unlistenVisibility?: UnlistenFn;
 
   // Query builder
   queryParams: QueryParam[] = [
@@ -56,8 +72,22 @@ export class DbQueryComponent implements OnInit {
   queryError: string | null = null;
   isQueryResultMaximized = false;
 
-  ngOnInit() {
+  async ngOnInit() {
     this.loadTablesData();
+    
+    // Listen for element visibility changes from Tauri
+    this.unlistenVisibility = await listen<ElementVisibilityPayload>('element-visibility-change', (event) => {
+      const { element_id, visible } = event.payload;
+      this.elementVisibility[element_id] = visible;
+      console.log(`Element ${element_id} visibility changed to ${visible}`);
+    });
+  }
+  
+  ngOnDestroy() {
+    // Clean up event listener
+    if (this.unlistenVisibility) {
+      this.unlistenVisibility();
+    }
   }
 
   toggleTheme() {
@@ -96,6 +126,37 @@ export class DbQueryComponent implements OnInit {
 
   get isAnyTableMaximized(): boolean {
     return this.maximizedTableIndex !== null;
+  }
+  
+  getTableVisibility(tableName: string): boolean {
+    const key = `table-${tableName.toLowerCase()}`;
+    return this.elementVisibility[key] !== undefined ? this.elementVisibility[key] : true;
+  }
+  
+  // Test method to toggle visibility from Angular side
+  async testToggleTableVisibility(tableName: string) {
+    const key = `table-${tableName.toLowerCase()}`;
+    const newVisibility = !this.elementVisibility[key];
+    
+    try {
+      await invoke('set_element_visibility', {
+        elementId: key,
+        visible: newVisibility
+      });
+      console.log(`Toggled ${tableName} visibility to ${newVisibility}`);
+    } catch (error) {
+      console.error('Failed to toggle visibility:', error);
+    }
+  }
+  
+  // Test auto-hide from Rust side
+  async testAutoHideFromRust() {
+    try {
+      await invoke('test_auto_hide_programmings');
+      console.log('Auto-hide command sent to Rust. Programmings table will be hidden in 5 seconds.');
+    } catch (error) {
+      console.error('Failed to call auto-hide:', error);
+    }
   }
 
   toggleQueryResultMaximize() {
